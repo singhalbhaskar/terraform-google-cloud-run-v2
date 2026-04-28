@@ -400,7 +400,6 @@ resource "google_iap_web_cloud_run_service_iam_member" "iap_access" {
 resource "google_project_service_identity" "iap_p4sa" {
   provider = google-beta
   count    = length(var.iap_members) > 0 ? 1 : 0
-  provider = google-beta
   project  = var.project_id
   service  = "iap.googleapis.com"
 }
