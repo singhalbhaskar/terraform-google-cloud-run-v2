@@ -15,6 +15,7 @@
  */
 
 data "google_compute_default_service_account" "default" {
+  provider = google-beta
   count   = local.create_service_account == false && var.service_account == null ? 1 : 0
   project = var.project_id
 }
@@ -79,6 +80,7 @@ locals {
 }
 
 resource "google_service_account" "sa" {
+  provider = google-beta
   count        = local.create_service_account ? 1 : 0
   project      = var.project_id
   account_id   = "${local.service_account_prefix}-sa"
@@ -86,6 +88,7 @@ resource "google_service_account" "sa" {
 }
 
 resource "google_project_iam_member" "roles" {
+  provider = google-beta
   for_each = toset(local.service_account_project_roles)
 
   project = var.project_id
@@ -375,6 +378,7 @@ resource "google_cloud_run_v2_service" "main" {
 }
 
 resource "google_cloud_run_v2_service_iam_member" "authorize" {
+  provider = google-beta
   for_each = toset(var.members)
   location = google_cloud_run_v2_service.main.location
   project  = google_cloud_run_v2_service.main.project
@@ -384,6 +388,7 @@ resource "google_cloud_run_v2_service_iam_member" "authorize" {
 }
 
 resource "google_iap_web_cloud_run_service_iam_member" "iap_access" {
+  provider = google-beta
   for_each               = toset(var.iap_members)
   project                = google_cloud_run_v2_service.main.project
   location               = google_cloud_run_v2_service.main.location
@@ -393,6 +398,7 @@ resource "google_iap_web_cloud_run_service_iam_member" "iap_access" {
 }
 
 resource "google_project_service_identity" "iap_p4sa" {
+  provider = google-beta
   count    = length(var.iap_members) > 0 ? 1 : 0
   provider = google-beta
   project  = var.project_id
@@ -400,6 +406,7 @@ resource "google_project_service_identity" "iap_p4sa" {
 }
 
 resource "google_cloud_run_v2_service_iam_member" "authorize_iap_p4sa" {
+  provider = google-beta
   count    = length(var.iap_members) > 0 ? 1 : 0
   location = google_cloud_run_v2_service.main.location
   project  = google_cloud_run_v2_service.main.project
